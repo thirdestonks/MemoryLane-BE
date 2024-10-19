@@ -1,19 +1,26 @@
-import { Injectable } from '@nestjs/common';
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { Inject, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { DrizzleDB } from '../drizzle/types/drizzle';
+import { DRIZZLE } from 'src/drizzle/drizzle.module';
+import { users } from 'src/drizzle/schema';
+import { eq } from 'drizzle-orm';
 
 @Injectable()
 export class UsersService {
+  constructor(@Inject(DRIZZLE) private db: DrizzleDB) {}
+
   create(createUserDto: CreateUserDto) {
     return 'This action adds a new user';
   }
 
-  findAll() {
-    return `This action returns all users`;
+  async findAll() {
+    return await this.db.select().from(users);
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async findOne(id: number) {
+    return await this.db.select().from(users).where(eq(users.id, id));
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {
